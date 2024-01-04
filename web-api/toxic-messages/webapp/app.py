@@ -78,14 +78,9 @@ def is_toxic():
     return str(int(prediction[0][1]))
 
 if __name__ == '__main__':
-    try:
-        port = int(sys.argv[1]) # This is for a command-line input
-    except:
-        port = 12345 # If you don't provide any port the port will be set to 12345
 
     model = load_zipped_pickle('model/toxic_messages_classifier.pkl')
     tokenizer = load_tokenizer('model/tokenizer.pkl')
     nlp = spacy.load('en_core_web_sm', disable=['parser', 'ner'])
     
-    app.run(port=port, debug=True)
-    #app.run()
+    app.run()
