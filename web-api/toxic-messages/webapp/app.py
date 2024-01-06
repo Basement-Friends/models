@@ -10,8 +10,6 @@ from spacy.lang.en.stop_words import STOP_WORDS
 from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 
-max_len = 1963
-
 def load_zipped_pickle(filename):
     with gzip.open(filename, 'rb') as f:
         loaded_object = pickle.load(f)
@@ -62,6 +60,10 @@ def lemmatize(text : str):
     return ' '.join([token.lemma_ for token in nlp(text)])
 
 app = flask.Flask(__name__, template_folder='templates')
+model = load_zipped_pickle('model/toxic_messages_classifier.pkl')
+tokenizer = load_tokenizer('model/tokenizer.pkl')
+max_len = 1963
+nlp = spacy.load('en_core_web_sm', disable=['parser', 'ner'])
 
 @app.route('/isToxic', methods=['POST'])
 def is_toxic():
@@ -77,10 +79,5 @@ def is_toxic():
     prediction = model.predict(X)
     return str(int(prediction[0][1]))
 
-if __name__ == '__main__':
-
-    model = load_zipped_pickle('model/toxic_messages_classifier.pkl')
-    tokenizer = load_tokenizer('model/tokenizer.pkl')
-    nlp = spacy.load('en_core_web_sm', disable=['parser', 'ner'])
-    
+if __name__ == '__main__': 
     app.run()
