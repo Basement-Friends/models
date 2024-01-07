@@ -1,6 +1,6 @@
 FROM python:3.10
 
-RUN mkdir /face_detection_age_classification
+RUN mkdir /toxic-messages
 
 COPY requirements.txt /toxic-messages/requirements.txt
 
