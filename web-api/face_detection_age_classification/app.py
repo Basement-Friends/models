@@ -6,13 +6,14 @@ import os
 import json
 import numpy
 import torchvision.transforms as transforms 
+import ast
 
 from PIL import Image
 from keras.models import load_model
 from keras_preprocessing.image import array_to_img
 
-def get_image_from_bytes(binary_image, max_size=1024):
-    input_image = Image.open(io.BytesIO(binary_image)).convert("RGB")
+def get_image_from_file(file, max_size=1024):
+    input_image = Image.open(io.BytesIO(file.read()))
     width, height = input_image.size
     resize_factor = min(max_size / width, max_size / height)
     resized_image = input_image.resize(
@@ -24,16 +25,24 @@ def get_image_from_bytes(binary_image, max_size=1024):
     return resized_image
 
 
-app = flask.Flask(__name__, template_folder='templates')
+app = flask.Flask(__name__)
 w_h = 200
+yolo_model = torch.hub.load('yolov5', 'custom', path='model/best.pt', source='local')
+age_model = load_model('model/age_model.h5')
+
 
 @app.post("/validate")
 async def validate_user():
     
-    data = flask.request.json
-    img_bytes = data.get('image')
+    if 'file' not in flask.request.files:
+        return str(400)
     
-    input_image = get_image_from_bytes(img_bytes)
+    file = flask.request.files['file']
+    
+    if file.filename == '':
+        return str(400)
+        
+    input_image = get_image_from_file(file)
     results = yolo_model(input_image)
     detect_res = results.pandas().xyxy[0].to_json(orient="records")  # JSON img1 predictions
     detect_res = json.loads(detect_res)
@@ -65,12 +74,4 @@ async def validate_user():
     return str(4)
 
 if __name__ == '__main__':
-    try:
-        port = int(sys.argv[1])
-    except:
-        port = 23456
-
-    yolo_model = torch.hub.load('yolov5', 'custom', path='model/best.pt', source='local')
-    age_model = load_model('model/age_model.h5')
-    
-    app.run(port=port, debug=True)
+    app.run()

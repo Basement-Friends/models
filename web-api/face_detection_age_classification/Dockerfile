@@ -1,11 +1,4 @@
-FROM tiangolo/uvicorn-gunicorn:python3.9-slim
-
-LABEL maintainer="team-erc"
-
-ENV WORKERS_PER_CORE=4 
-ENV MAX_WORKERS=24
-ENV LOG_LEVEL="warning"
-ENV TIMEOUT="200"
+FROM python:3.10
 
 RUN mkdir /face_detection_age_classification
 
@@ -15,8 +8,10 @@ COPY . /face_detection_age_classification
 
 WORKDIR /face_detection_age_classification
 
-RUN pip install -r requirements.txt
+RUN pip3 install --upgrade pip
+
+RUN pip install  --prefer-binary --no-cache-dir --upgrade -r requirements.txt
 
 EXPOSE 23456
 
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "23456"]
+CMD ["flask", "run", "--host", "0.0.0.0", "--port", "23456"]
