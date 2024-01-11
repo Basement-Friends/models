@@ -104,7 +104,6 @@ thop==0.1.1.post2209072238
 threadpoolctl==3.2.0
 torch==2.1.2
 torchvision==0.16.2
-tqdm==4.66.1
 typer==0.9.0
 typing==3.7.4.3
 typing_extensions
@@ -117,3 +116,4 @@ websocket-client==1.3.3
 Werkzeug==3.0.1
 wrapt==1.16.0
 wurlitzer==3.0.3
+opencv-python-headless
